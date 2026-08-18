@@ -726,11 +726,13 @@ class RouteMatchList with Diagnosticable {
         pageKey = ValueKey<String>('${match.pageKey.value}${branch.pageKey.value}');
         usedPageKeys.add(pageKey.value);
       }
-      GlobalKey<NavigatorState> navigatorKey = branch.navigatorKey;
-      if (!usedNavigatorKeys.add(navigatorKey)) {
-        navigatorKey = _syntheticShellNavigatorKey(match.pageKey, branch.pageKey.value);
-        usedNavigatorKeys.add(navigatorKey);
-      }
+      // EXPERIMENT (not for landing): always recreate the navigator key for an
+      // imperative push instead of only when it actually collides.
+      final GlobalKey<NavigatorState> navigatorKey = _syntheticShellNavigatorKey(
+        match.pageKey,
+        branch.pageKey.value,
+      );
+      usedNavigatorKeys.add(navigatorKey);
       return branch.copyWith(matches: matches, pageKey: pageKey, navigatorKey: navigatorKey);
     }
     // Add the input `match` instead of the incompatibleMatch since it contains
